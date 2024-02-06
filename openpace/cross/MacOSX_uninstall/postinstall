@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# Remove symlinks to commands
+for file in /Library/OpenPACE/bin/*
+do
+	test -L "/usr/local/bin/$(basename $file)" && rm -f "/usr/local/bin/$(basename $file)"
+done
+
+# Remove symlinks to files
+for file in /Library/OpenPACE/lib/python2.7/site-packages/*
+do
+	test -L "/usr/local/lib/python2.7/site-packages/$(basename $file)" && rm -f "/usr/local/lib/python2.7/site-packages/$(basename $file)"
+done
+
+# Remove installed files
+rm -rf /Library/OpenPACE
+
+echo "OpenPACE has been removed from your system. See you again!"

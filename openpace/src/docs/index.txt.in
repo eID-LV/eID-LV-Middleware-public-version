@@ -1,0 +1,116 @@
+.. highlight:: sh
+
+.. |PACE| replace:: :abbr:`PACE (Password Authenticated Connection Establishment)`
+.. |TA| replace:: :abbr:`TA (Terminal Authenticatation)`
+.. |CA| replace:: :abbr:`CA (Chip Authentication)`
+.. |EAC| replace:: :abbr:`EAC (Extended Access Control)`
+.. |CVCA| replace:: :abbr:`CVCA (Country Verifying Certificate Authority)`
+.. |CSCA| replace:: :abbr:`CSCA (Country Signing Certificate Authority)`
+
+###############################################################################
+Welcome to @PACKAGE_NAME@'s documentation!
+###############################################################################
+
+.. sidebar:: Summary
+
+    @PACKAGE_SUMMARY@
+
+    :Authors:
+        - `Frank Morgner <frankmorgner@gmail.com>`_
+        - `Dominik Oepen <oepen@informatik.hu-berlin.de>`_
+    :License:
+        GPL version 3
+    :Tested Platforms:
+        - Windows
+        - Linux (Debian, Ubuntu, SUSE, OpenMoko)
+        - FreeBSD
+        - Mac OS
+        - Solaris
+        - Android
+        - Javascript
+
+OpenPACE implements Extended Access Control (EAC) version 2 as specified in
+`BSI TR-03110`_. OpenPACE comprises support for the following protocols:
+
+:Password Authenticated Connection Establishment (PACE):
+    Establish a secure channel with a strong key between two parties that only
+    share a weak secret.
+:Terminal Authentication (TA):
+    Verify/prove the terminal's certificate (or rather certificate chain) and
+    secret key.
+:Chip Authentication (CA):
+    Establish a secure channel based on the chip's static key pair proving its
+    authenticy.
+
+Furthermore, OpenPACE also supports Card Verifiable Certificates (CV
+Certificates) and signing requests as well as easy to use wrappers for using
+the established secure channels.
+
+The handlers for looking up trust anchors during |TA| and |CA| (i.e. the |CVCA|
+and the |CSCA| certificates) can be customized. By default, the appropriate
+certificates will be looked up in the file system.
+
+OpenPACE supports all variants of |PACE| (DH/ECDH, GM/IM), |TA|
+(RSASSA-PKCS1-v1_5/RSASSA-PSS/ECDSA), |CA| (DH/ECDH) and all standardized
+domain parameters (GFP/ECP).
+
+OpenPACE is implemented as C-library and comes with native language wrappers
+for:
+
+- Python
+- Ruby
+- Javascript
+- Java
+- Go
+
+.. image:: https://img.shields.io/travis/frankmorgner/openpace/master.svg?label=Travis%20CI%20build
+    :target: https://travis-ci.org/frankmorgner/openpace
+    :alt: Travis CI Build Status Image
+
+.. image:: https://img.shields.io/appveyor/ci/frankmorgner/openpace/master.svg?label=AppVeyor%20build
+    :target: https://ci.appveyor.com/project/frankmorgner/openpace
+    :alt: AppVeyor CI Build Status Image
+
+.. image:: https://img.shields.io/coverity/scan/1789.svg?label=Coverity%20scan
+    :target: https://scan.coverity.com/projects/1789
+    :alt: Coverity Scan Status
+
+.. image:: https://img.shields.io/codecov/c/github/frankmorgner/openpace/master.svg
+    :target: https://codecov.io/gh/frankmorgner/openpace/branch/master
+    :alt: Codecov Status
+
+.. note::
+    OpenPACE only implements the cryptographic protocols of the |EAC|. If you
+    actually want to exchange data with a smart card, you need to take care of
+    formatting and sending the data in the form of APDUs. If this is what
+    you're trying to do, you should have a look at the :command:`npa-tool` of
+    the `nPA Smart Card Library`_.
+
+
+*******************************************************************************
+Further Reading
+*******************************************************************************
+
+.. toctree::
+    :maxdepth: 3
+
+    install
+    usage
+    protocols
+
+
+*******************************************************************************
+Where to get help
+*******************************************************************************
+
+Do you have questions, suggestions or contributions? Feedback of any kind is
+more than welcome! You can contact us through our `GitHub
+<https://github.com/frankmorgner/openpace/>`_ `repositories
+<https://github.com/d0/openpace/>`_ or the `project trackers
+<@PACKAGE_BUGREPORT@>`_.
+
+
+.. target-notes::
+
+.. _`BSI TR-03110`: https://www.bsi.bund.de/EN/Publications/TechnicalGuidelines/TR03110/BSITR03110.html
+.. _`nPA Smart Card Library`: https://frankmorgner.github.io/vsmartcard/

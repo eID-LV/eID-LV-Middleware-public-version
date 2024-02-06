@@ -1,0 +1,52 @@
+#!/bin/bash
+if [ "$(id -u)" != "0" ]; then
+   echo "This script must be run as root:" 1>&2
+   echo "" 1>&2
+   echo "sudo /usr/local/bin/latvia-eid-uninstall" 1>&2
+   exit 1
+fi
+
+# Remove symlinks to commands
+for file in /Library/latvia-eid/bin/*; do
+	test -L "/usr/local/bin/eidlv-$(basename $file)" && rm -f "/usr/local/bin/eidlv-$(basename $file)"
+done
+
+# Remove symlink for pkcs11
+test -L /usr/lib/eidlv-pkcs11.so && rm -f /usr/lib/eidlv-pkcs11.so
+test -L /usr/lib/eidlv-pkcs11.dylib && rm -f /usr/lib/eidlv-pkcs11.dylib
+test -L /usr/local/lib/eidlv-pkcs11.so && rm -f /usr/local/lib/eidlv-pkcs11.so
+test -L /usr/local/lib/eidlv-pkcs11.dylib && rm -f /usr/local/lib/eidlv-pkcs11.dylib
+
+test -L /usr/lib/otlv-pkcs11.so && rm -f /usr/lib/otlv-pkcs11.so
+test -L /usr/lib/otlv-pkcs11.dylib && rm -f /usr/lib/otlv-pkcs11.dylib
+test -L /usr/local/lib/otlv-pkcs11.so && rm -f /usr/local/lib/otlv-pkcs11.so
+test -L /usr/local/lib/otlv-pkcs11.dylib && rm -f /usr/local/lib/otlv-pkcs11.dylib
+
+rm -f /usr/local/bin/latvia-eid-uninstall
+rm -f /Library/LaunchAgents/org.latviaeid.eidlvuiserver.plist
+
+rm -rf /Library/latvia-eid
+rm -rf /Applications/eidlv-pintool.app
+rm -rf /Applications/Latvia-eID-PinTool.app
+#OUT=$(pluginkit -vv -m -p com.apple.ctk-tokens | grep /Applications/LatviaEIDTokenApp.app/Contents/PlugIns/LatviaEIDToken.appex)
+#if [ ! -z "$OUT" ];
+#then 
+#   pluginkit -r /Applications/LatviaEIDTokenApp.app/Contents/PlugIns/LatviaEIDToken.appex
+#fi
+#if [ -d "/Applications/LatviaEIDTokenApp.app" ];
+#then 
+#	rm -rf /Applications/LatviaEIDTokenApp.app
+#fi
+test -d /System/Library/Security/tokend/EIDLV.tokend && rm -rf /System/Library/Security/tokend/EIDLV.tokend
+test -d /Library/Security/tokend/EIDLV.tokend && rm -rf /Library/Security/tokend/EIDLV.tokend
+
+
+# delete receipts on 10.6 and later
+for file in /var/db/receipts/org.latvia-eid.mac.bom /var/db/receipts/org.latvia-eid.mac.plist; do
+	test -f $file && rm -f $file
+done
+
+/usr/sbin/pkgutil --forget org.latvia-eid.mac
+
+rm -f /usr/local/bin/latvia-eid-uninstall
+echo "Latvia-eID Middleware has been removed from your system. See you again!"

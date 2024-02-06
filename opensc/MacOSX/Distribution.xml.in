@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<installer-gui-script minSpecVersion="2">
+    <allowed-os-versions>
+      <os-version min="10.9"/>
+    </allowed-os-versions>
+    <background file="background.jpg" mime-type="image/jpeg" scaling="tofit"/>
+    <welcome file="Welcome.html" mime-type="text/html"/>
+    <title>@PACKAGE_STRING@</title>
+
+    <pkg-ref id="com.apple.tokend.opensc"/>
+    <options customize="never" require-scripts="false"/>
+    <choices-outline>
+        <line choice="default">
+            <line choice="com.apple.tokend.opensc"/>
+        </line>
+    </choices-outline>
+    <choice id="default"/>
+    <choice id="com.apple.tokend.opensc" visible="true">
+        <pkg-ref id="com.apple.tokend.opensc"/>
+    </choice>
+    <pkg-ref id="com.apple.tokend.opensc" onConclusion="none">OpenSC.pkg</pkg-ref>
+</installer-gui-script>

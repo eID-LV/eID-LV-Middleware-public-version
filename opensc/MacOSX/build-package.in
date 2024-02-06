@@ -1,0 +1,270 @@
+#!/bin/bash
+set -ex
+OSX_BUILD_RELEASE=10.13
+OSX_BUILD_SDK=
+INTEL_ONLY=${INTEL_ONLY:-no}
+
+BUILDPATH=${PWD}
+CODESIGNID="Developer ID Application: IDRIX (Z933746L2S)"
+INSTALLERSIGNID="Developer ID Installer: IDRIX (Z933746L2S)"
+
+export PKG_CONFIG_PATH="$(PWD)/../openssl/lib/pkgconfig:${BUILDPATH}/target/Library/latvia-eid/lib/pkgconfig:/usr/lib/pkgconfig"
+export CFLAGS="-I${BUILDPATH}/target/Library/latvia-eid/include -I$(PWD)/../openssl/include -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX${OSX_BUILD_SDK}.sdk -arch x86_64 -arch arm64 -mmacosx-version-min=${OSX_BUILD_RELEASE} -g"
+export CPPFLAGS="-I${BUILDPATH}/target/Library/latvia-eid/include -I$(PWD)/../openssl/include -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX${OSX_BUILD_SDK}.sdk -mmacosx-version-min=${OSX_BUILD_RELEASE}"
+export LDFLAGS="-L${BUILDPATH}/target/Library/latvia-eid/lib -L$(PWD)/../openssl/lib -lcrypto -Wl,-syslibroot,/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX${OSX_BUILD_SDK}.sdk -arch x86_64 -arch arm64"
+MACOSX_DEPLOYMENT_TARGET=${OSX_BUILD_RELEASE}
+export MACOSX_DEPLOYMENT_TARGET=${OSX_BUILD_RELEASE}
+
+export SED=/usr/bin/sed
+PREFIX=/Library/latvia-eid
+DYLD_LIBRARY_PATH="${PWD}/../openssl/lib:${BUILDPATH}/target/Library/latvia-eid/lib"
+export DYLD_LIBRARY_PATH
+
+OPENSSL_CFLAGS="-I$(PWD)/../openssl/include"
+OPENSSL_LIBS="-L$(PWD)/../openssl/lib -lcrypto -lssl"
+export OPENSSL_CFLAGS
+export OPENSSL_LIBS
+
+CRYPTO_CFLAGS="-I$(PWD)/../openssl/include"
+CRYPTO_LIBS="-L$(PWD)/../openssl/lib -lcrypto"
+export OPENSSL_CFLAGS
+export OPENSSL_LIBS
+
+rm -rf target
+
+cd ../openpace
+
+export LT_SYS_LIBRARY_PATH="${DYLD_LIBRARY_PATH}"
+
+chmod gou+x configure
+chmod gou+x config.sub
+chmod gou+x config.guess
+chmod gou+x bootstrap
+chmod gou+x compile
+chmod gou+x depcomp
+chmod gou+x install-sh
+chmod gou+x ltmain.sh
+
+autoreconf --verbose --install
+./configure --prefix=$PREFIX --disable-static
+
+make clean
+make
+make install DESTDIR=${BUILDPATH}/target
+
+rm -fr ${BUILDPATH}/target/Library/latvia-eid/bin
+rm -fr ${BUILDPATH}/target/Library/latvia-eid/share
+
+cd ../opensc
+
+chmod gou+x depcomp
+chmod gou+x bootstrap
+chmod gou+x compile
+rm -f configure config.sub config.status Makefile
+./bootstrap
+
+# correct OpenSSL libraries path if necessary
+# install_name_tool -id "/Library/latvia-eid/lib/libssl.1.0.0.dylib" ../openssl/lib/libssl.1.0.0.dylib
+# install_name_tool -id "/Library/latvia-eid/lib/libcrypto.1.0.0.dylib" ../openssl/lib/libcrypto.1.0.0.dylib
+
+# In case of OSX 10.5 and 10.8, link against static libltdl to work around
+# missing libltdl dylib
+#test ${OSX_BUILD_RELEASE} = "10.5" && export LTLIB_LIBS="/Developer/SDKs/MacOSX10.5.sdk/usr/lib/libltdl.a"
+#test ${OSX_BUILD_RELEASE} = "10.8" && test -e "/Developer/SDKs/MacOSX10.6.sdk/usr/lib/libltdl.a" && export LTLIB_LIBS="/Developer/SDKs/MacOSX10.6.sdk/usr/lib/libltdl.a"
+
+./configure --prefix=$PREFIX \
+--sysconfdir=$PREFIX/etc \
+--disable-dependency-tracking \
+--enable-shared \
+--disable-static \
+--disable-strict \
+--disable-notify \
+--enable-openpace \
+--disable-doc \
+--without-completiondir \
+--disable-assert
+
+
+if !(test -e src/libopensc/.libs/libeidlv-opensc.dylib && (file src/libopensc/.libs/libeidlv-opensc.dylib | grep "x86_64")); then
+	make clean
+fi
+
+# compile
+make -j 2
+
+# copy files
+
+make install DESTDIR=${BUILDPATH}/target
+
+# remove garbage
+rm -fr ${BUILDPATH}/target/Library/latvia-eid/etc
+rm -fr ${BUILDPATH}/target/Library/latvia-eid/include
+rm -fr ${BUILDPATH}/target/Library/latvia-eid/lib/*.la
+rm -fr ${BUILDPATH}/target/Library/latvia-eid/share/latvia-eid/*.profile
+rm -fr ${BUILDPATH}/target/Library/latvia-eid/share/applications
+rm -fr ${BUILDPATH}/target/Library/latvia-eid/share/doc/latvia-eid/NEWS
+
+# generate .bundle (required by Adobe Acrobat)
+# cp target/Library/latvia-eid/lib/eidlv-pkcs11.so target/Library/latvia-eid/lib/otlv-pkcs11.so
+chmod +x ./MacOSX/libtool-bundle
+./MacOSX/libtool-bundle target/Library/latvia-eid/lib/eidlv-pkcs11.so target/Library/latvia-eid/lib
+# ./MacOSX/libtool-bundle target/Library/latvia-eid/lib/otlv-pkcs11.so target/Library/latvia-eid/lib
+
+codesign -s "${CODESIGNID}" --timestamp --option runtime --deep -fv target/Library/latvia-eid/lib/eidlv-pkcs11.bundle
+
+# Build pkcs11 engine for Latvia-eID
+make --directory=../eidlv_engine -f Makefile.osx OSXVERSION=${OSX_BUILD_RELEASE} clean
+make --directory=../eidlv_engine -f Makefile.osx OSXVERSION=${OSX_BUILD_RELEASE}
+make --directory=../eidlv_engine -f Makefile.osx OSXVERSION=${OSX_BUILD_RELEASE} install PREFIX=${BUILDPATH}/target/Library/latvia-eid
+
+mkdir -p target/Library/latvia-eid/etc
+
+cp target/Library/latvia-eid/lib/eidlv-pkcs11.so target/Library/latvia-eid/lib/eidlv-pkcs11.dylib
+# cp target/Library/latvia-eid/lib/otlv-pkcs11.so target/Library/latvia-eid/lib/otlv-pkcs11.dylib
+cp ../latvia-eid.conf.nix target/Library/latvia-eid/etc/latvia-eid.conf
+cp ../openssl/lib/libcrypto.1.0.0.dylib target/Library/latvia-eid/lib/.
+cp ../openssl/lib/libssl.1.0.0.dylib target/Library/latvia-eid/lib/.
+cp -R -P ../wxWidgets/lib/libwx_osx* target/Library/latvia-eid/lib/.
+cd target/Library/latvia-eid/lib
+ln -s libssl.1.0.0.dylib libssl.dylib
+ln -s libcrypto.1.0.0.dylib libcrypto.dylib
+cd ../../../..
+
+mkdir -p target/Library/latvia-eid/share/latvia-eid/
+cp ../CHANGES target/Library/latvia-eid/share/latvia-eid/.
+
+codesign -s "${CODESIGNID}" --timestamp --option runtime  -fv target/Library/latvia-eid/lib/eidlv-pkcs11.dylib
+codesign -s "${CODESIGNID}" --timestamp --option runtime  -fv target/Library/latvia-eid/lib/eidlv-pkcs11.so
+
+codesign -s "${CODESIGNID}" --timestamp --option runtime  -fv target/Library/latvia-eid/lib/eidlv_engine.dylib
+
+codesign -s "${CODESIGNID}" --timestamp --option runtime  -fv target/Library/latvia-eid/lib/libeac.2.dylib
+codesign -s "${CODESIGNID}" --timestamp --option runtime  -fv target/Library/latvia-eid/lib/libsmm-local.6.so
+codesign -s "${CODESIGNID}" --timestamp --option runtime  -fv target/Library/latvia-eid/lib/pkcs11-spy.so
+codesign -s "${CODESIGNID}" --timestamp --option runtime  -fv target/Library/latvia-eid/lib/libeidlv.6.dylib
+codesign -s "${CODESIGNID}" --timestamp --option runtime  -fv target/Library/latvia-eid/lib/onepin-eidlv-pkcs11.so
+codesign -s "${CODESIGNID}" --timestamp --option runtime  -fv target/Library/latvia-eid/lib/libsmm-local.6.so
+
+
+# Unpack the binary building components
+rm -fr OpenSC.tokend/build
+tar -C OpenSC.tokend -xzvf build-10.9.tar.gz
+
+# Create the symlink to OpenSC sources
+test -L OpenSC.tokend/build/opensc-src || ln -sf ${BUILDPATH}/src OpenSC.tokend/build/opensc-src
+
+# build and copy OpenSC.tokend
+#xcodebuild -configuration Deployment -project OpenSC.tokend/Tokend.xcodeproj clean
+#xcodebuild -configuration Deployment -project OpenSC.tokend/Tokend.xcodeproj
+
+
+cd OpenSC.tokend/build
+rm -fr EIDLV.tokend
+unzip ../bin_EIDLV.tokend.zip
+cd ../..
+
+mkdir -p target/Library/latvia-eid/tokend
+cp -R OpenSC.tokend/build/EIDLV.tokend target/Library/latvia-eid/tokend/.
+rm -fr target/Library/latvia-eid/tokend/EIDLV.tokend/Contents/MacOS/EIDLV_debug
+
+codesign --timestamp --deep --force --sign "${CODESIGNID}" --timestamp -fv target/Library/latvia-eid/tokend/EIDLV.tokend
+
+
+# CTK
+#cd ../LatviaEIDTokenApp
+#./bootstrap
+#xcodebuild -target LatviaEIDTokenApp -configuration Release -project LatviaEIDTokenApp.xcodeproj install DSTROOT=./build_release
+#codesign -s "${CODESIGNID}" --deep --force --timestamp --options runtime --entitlements ./LatviaEIDToken/LatviaEIDToken.entitlements ./build_release/Applications/LatviaEIDTokenApp.app/Contents/PlugIns/LatviaEIDToken.appex
+#codesign -s "${CODESIGNID}" --force --timestamp --options runtime --entitlements ./LatviaEIDTokenApp/LatviaEIDTokenApp.entitlements ./build_release/Applications/LatviaEIDTokenApp.app # do not use --deep to avoid losing entitlements
+
+# Build engine
+
+
+# Build PinTool
+#cd ../..
+cd ../PinTool
+make -f Makefile.osx clean
+make -f Makefile.osx OSXVERSION=${OSX_BUILD_RELEASE}
+
+codesign -s "${CODESIGNID}" --timestamp --option runtime --deep --entitlements  PinTool.Entitlements.plist -fv  Latvia-eID-PinTool.app
+
+# Build UI components
+cd ../eidLvUI/eidLvUI
+make -f Makefile.osx clean
+make -f Makefile.osx OSXVERSION=${OSX_BUILD_RELEASE} OSXSDK=$(OSX_BUILD_SDK)
+
+codesign -s "${CODESIGNID}" --timestamp --option runtime --deep --entitlements  ../../PinTool/PinTool.Entitlements.plist -fv  eidLvUIClient.app
+codesign -s "${CODESIGNID}" --timestamp --option runtime --deep --entitlements  ../../PinTool/PinTool.Entitlements.plist -fv  eidLvUIServer
+
+cd ../../opensc
+
+# The "UnInstaller"
+mkdir -p target/usr/local/bin
+cp MacOSX/opensc-uninstall target/Library/latvia-eid/bin/latvia-eid-uninstall
+chmod +x target/Library/latvia-eid/bin/latvia-eid-uninstall
+
+# Build "uninstaller"
+osacompile -o "Latvia-eID Uninstaller.app" -a x86_64 "MacOSX/OpenSC_Uninstaller.applescript"
+codesign -s "${CODESIGNID}" --timestamp --option runtime  -fv  "Latvia-eID Uninstaller.app"
+
+mkdir -p target/Applications
+cp -R ../PinTool/Latvia-eID-PinTool.app target/Applications/.
+#cp -R ../LatviaEIDTokenApp/build_release/Applications/LatviaEIDTokenApp.app target/Applications/.
+cp ../pintool.ini target/Library/latvia-eid/etc/pintool.ini
+
+cp ../eidLvUI/eidLvUI/eidLvUIServer target/Library/latvia-eid/bin/.
+cp -R ../eidLvUI/eidLvUI/eidLvUIClient.app target/Library/latvia-eid/bin/.
+
+mkdir -p target/Library/LaunchAgents
+cp ../eidLvUI/eidLvUI/org.latviaeid.eidlvuiserver.plist target/Library/LaunchAgents/.
+
+rm -fr `find target/Applications/Latvia-eID-PinTool.app | grep .svn`
+
+rm -fr target/Library/latvia-eid/include
+rm -fr target/Library/latvia-eid/etc/eac
+
+codesign -s "${CODESIGNID}" --timestamp --option runtime  -fv target/Library/latvia-eid/bin/pkcs15-tool
+codesign -s "${CODESIGNID}" --timestamp --option runtime  -fv target/Library/latvia-eid/bin/pkcs15-crypt
+codesign -s "${CODESIGNID}" --timestamp --option runtime  -fv target/Library/latvia-eid/bin/opensc-asn1
+codesign -s "${CODESIGNID}" --timestamp --option runtime  -fv target/Library/latvia-eid/bin/opensc-explorer
+codesign -s "${CODESIGNID}" --timestamp --option runtime  -fv target/Library/latvia-eid/bin/opensc-tool
+codesign -s "${CODESIGNID}" --timestamp --option runtime  -fv target/Library/latvia-eid/bin/pkcs11-tool
+
+
+cd target/Library/latvia-eid/tokend/
+zip tkd.dat -r EIDLV.tokend
+xxd -p tkd.dat tkd.desc 
+rm -fr EIDLV.tokend
+rm -f tkd.dat
+cd ../../../..
+
+chmod +x MacOSX/scripts/*
+
+xattr -rc ./target
+xattr -rc ./MacOSX/resources/
+
+# Build installer package
+/usr/local/bin/packagesbuild MacOSX/Latvia-eID-Middleware.pkgproj
+
+cd target/Library/latvia-eid/tokend/
+xxd -r -p tkd.desc tkd.dat
+unzip tkd.dat
+rm -f tkd.dat
+rm -f tkd.desc
+cd ../../../..
+
+rm -f Latvia-eid-2.1.2.pkg
+productsign --sign "${INSTALLERSIGNID}" --timestamp Latvia-eid-2.1.2-unsigned.pkg Latvia-eid-2.1.2.pkg
+
+
+# Create .dmg
+#rm -f Latvia-eid-2.1.2.dmg
+#TIMESTAMP=$(date +%Y.%m.%d)
+#hdiutil create -srcfolder Latvia-eid-2.1.2.pkg -srcfolder "Latvia-eID Uninstaller.app" -volname "Latvia-eid Middleware 2.1.2 for Mac OS X (${TIMESTAMP})" Latvia-eid-2.1.2.dmg
+
+rm -f Latvia-eid-2.1.2-target.tgz
+tar cf Latvia-eid-2.1.2-target.tgz target "Latvia-eID Uninstaller.app"
+
+# cleanup
+rm -fr target
+rm -fr targetno

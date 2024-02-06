@@ -1,0 +1,4 @@
+EIDLV_ENGINE {
+  global: v_check; bind_engine;
+  local: *;         # hide everything else
+};

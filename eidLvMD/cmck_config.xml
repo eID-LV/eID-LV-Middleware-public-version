@@ -1,0 +1,219 @@
+<CMCKConfig>
+<V7>
+  <Version>2</Version> 
+ <CardDefaults>
+ <DefaultPins>
+ <PinEntry>
+  <RoleID>1</RoleID> 
+  <Type>AlphaNumericPinType</Type> 
+  <Value>0x39 0x39 0x39 0x39</Value> 
+  <Blocking>False</Blocking> 
+  <AllowZeroLength>False</AllowZeroLength> 
+  </PinEntry>
+  <PinEntry>
+  <RoleID>2</RoleID> 
+  <Type>AlphaNumericPinType</Type> 
+  <Value>0x31 0x32 0x33 0x34 0x35 0x36 0x37 0x38</Value> 
+  <Blocking>False</Blocking> 
+  <AllowZeroLength>False</AllowZeroLength> 
+  </PinEntry>
+  <PinEntry>
+  <RoleID>3</RoleID> 
+  <Type>AlphaNumericPinType</Type> 
+  <Value>0x31 0x31 0x31 0x31 0x31 0x31</Value> 
+  <Blocking>False</Blocking> 
+  <AllowZeroLength>False</AllowZeroLength> 
+  </PinEntry>  
+  </DefaultPins>
+ <CardSupports>
+  <MinimumVersion>6</MinimumVersion> 
+  <CurrentVersion>7</CurrentVersion> 
+  <LoadingUnderCAPI>True</LoadingUnderCAPI> 
+  <LoadingUnderCNG>True</LoadingUnderCNG> 
+  <KeyImport>False</KeyImport> 
+  <KeyTypes>AT_KEYEXCHANGE AT_ECDSA_P256</KeyTypes> 
+  <OnCardPadding>False</OnCardPadding> 
+  <PaddingAlgorithms>CARD_PADDING_NONE CARD_PADDING_PKCS1</PaddingAlgorithms> 
+  <SignHashAlgorithms>CALG_SHA CALG_SHA1 CALG_SHA_256</SignHashAlgorithms> 
+  <SignHashFlags>CRYPT_NOHASHOID</SignHashFlags>
+  <SignReturnBufferSize>True</SignReturnBufferSize> 
+<KDFTypes>HASH HMAC TLS_PRF SP800_56A_CONCAT</KDFTypes>
+<KDFHashAlgorithms>SHA256 SHA384 SHA512</KDFHashAlgorithms>
+<KDFHMACflag>True</KDFHMACflag>
+ 
+  <SupportsCardGetChallenge>False</SupportsCardGetChallenge> 
+  <SupportsCardAuthenticateChallenge>False</SupportsCardAuthenticateChallenge> 
+  <SupportsCardGetChallengeEx>False</SupportsCardGetChallengeEx> 
+  <SupportsCardUnblockPin>False</SupportsCardUnblockPin> 
+  <SupportsCardChangeAuthenticator>True</SupportsCardChangeAuthenticator> 
+  <SupportsCardChangeAuthenticatorEx>True</SupportsCardChangeAuthenticatorEx> 
+  </CardSupports>
+  </CardDefaults>
+ <TestSuiteDefaults>
+      <INF>
+ <INFFile>C:\SmartcardMinidriverTest\eidLvMD.inf</INFFile>
+      </INF>
+ <Logging>
+  <LogFile>CMCK_log_v7.xml</LogFile> 
+  <LogToConsole>True</LogToConsole> 
+  </Logging>
+ <TestParams>
+ <TestParam>
+  <Test>MultiThreaded</Test> 
+  <Name>t</Name> 
+  <Value>5</Value> 
+  </TestParam>
+ <TestParam>
+  <Test>MultiThreaded</Test> 
+  <Name>n</Name> 
+  <Value>5</Value> 
+  </TestParam>
+ <TestParam>
+  <Test>NonRepeatingChallenge</Test> 
+  <Name>n</Name> 
+  <Value>300</Value> 
+  </TestParam>
+  </TestParams>
+  </TestSuiteDefaults>
+</V7>
+
+<V6>
+  <Version>2</Version> 
+ <CardDefaults>
+ <DefaultPins>
+ <PinEntry>
+  <RoleID>1</RoleID> 
+  <Type>AlphaNumericPinType</Type> 
+  <Value>0x39 0x39 0x39 0x39</Value> 
+  <Blocking>False</Blocking> 
+  <AllowZeroLength>False</AllowZeroLength> 
+  </PinEntry>
+  <PinEntry>
+  <RoleID>2</RoleID> 
+  <Type>AlphaNumericPinType</Type> 
+  <Value>0x31 0x32 0x33 0x34 0x35 0x36 0x37 0x38</Value> 
+  <Blocking>False</Blocking> 
+  <AllowZeroLength>False</AllowZeroLength> 
+  </PinEntry>
+  <PinEntry>
+  <RoleID>3</RoleID> 
+  <Type>AlphaNumericPinType</Type> 
+  <Value>0x31 0x31 0x31 0x31 0x31 0x31</Value> 
+  <Blocking>False</Blocking> 
+  <AllowZeroLength>False</AllowZeroLength> 
+  </PinEntry>  
+  </DefaultPins>
+ <CardSupports>
+  <MinimumVersion>6</MinimumVersion> 
+  <CurrentVersion>7</CurrentVersion> 
+  <LoadingUnderCAPI>True</LoadingUnderCAPI> 
+  <LoadingUnderCNG>True</LoadingUnderCNG> 
+  <KeyImport>False</KeyImport> 
+  <KeyTypes>AT_KEYEXCHANGE AT_ECDSA_P256</KeyTypes> 
+  <OnCardPadding>False</OnCardPadding> 
+  <PaddingAlgorithms>CARD_PADDING_NONE CARD_PADDING_PKCS1</PaddingAlgorithms> 
+  <SignHashAlgorithms>CALG_SHA CALG_SHA1 CALG_SHA_256</SignHashAlgorithms> 
+  <SignHashFlags>CRYPT_NOHASHOID</SignHashFlags>
+  <SignReturnBufferSize>True</SignReturnBufferSize> 
+	<KDFTypes>HASH HMAC TLS_PRF SP800_56A_CONCAT</KDFTypes>
+	<KDFHashAlgorithms>SHA256 SHA384 SHA512</KDFHashAlgorithms>
+	<KDFHMACflag>True</KDFHMACflag>
+ 
+  <SupportsCardGetChallenge>False</SupportsCardGetChallenge> 
+  <SupportsCardAuthenticateChallenge>False</SupportsCardAuthenticateChallenge> 
+  <SupportsCardGetChallengeEx>False</SupportsCardGetChallengeEx> 
+  <SupportsCardUnblockPin>False</SupportsCardUnblockPin> 
+  <SupportsCardChangeAuthenticator>True</SupportsCardChangeAuthenticator> 
+  <SupportsCardChangeAuthenticatorEx>True</SupportsCardChangeAuthenticatorEx> 
+  </CardSupports>
+  </CardDefaults>
+ <TestSuiteDefaults>
+      <INF>
+ <INFFile>C:\SmartcardMinidriverTest\eidLvMD.inf</INFFile>
+      </INF>
+ <Logging>
+  <LogFile>CMCK_log_v6.xml</LogFile> 
+  <LogToConsole>True</LogToConsole> 
+  </Logging>
+ <TestParams>
+ <TestParam>
+  <Test>MultiThreaded</Test> 
+  <Name>t</Name> 
+  <Value>5</Value> 
+  </TestParam>
+ <TestParam>
+  <Test>MultiThreaded</Test> 
+  <Name>n</Name> 
+  <Value>5</Value> 
+  </TestParam>
+ <TestParam>
+  <Test>NonRepeatingChallenge</Test> 
+  <Name>n</Name> 
+  <Value>300</Value> 
+  </TestParam>
+  </TestParams>
+  </TestSuiteDefaults>
+</V6>
+ 
+<V5>   
+  <Version>1</Version>
+  
+  <CardDefaults>
+ <DefaultPins>
+ <PinEntry>
+  <RoleID>1</RoleID> 
+  <Type>AlphaNumericPinType</Type> 
+  <Value>0x39 0x39 0x39 0x39</Value> 
+  <Blocking>False</Blocking> 
+  <AllowZeroLength>False</AllowZeroLength> 
+  </PinEntry> 
+  </DefaultPins>
+
+ 
+    <CardSupports>
+        <MinimumVersion>6</MinimumVersion>
+        <CurrentVersion>7</CurrentVersion>
+        <LoadingUnderCAPI>True</LoadingUnderCAPI>
+        <LoadingUnderCNG>True</LoadingUnderCNG>
+        <KeyImport>False</KeyImport>
+		<KeyTypes>AT_KEYEXCHANGE AT_ECDSA_P256</KeyTypes> 
+		<OnCardPadding>False</OnCardPadding> 
+		<PaddingAlgorithms>CARD_PADDING_NONE CARD_PADDING_PKCS1</PaddingAlgorithms> 
+		<SignHashAlgorithms>CALG_SHA CALG_SHA1 CALG_SHA_256</SignHashAlgorithms> 
+		<SignHashFlags>CRYPT_NOHASHOID</SignHashFlags>
+		<SignReturnBufferSize>True</SignReturnBufferSize> 
+		<KDFTypes>HASH HMAC TLS_PRF SP800_56A_CONCAT</KDFTypes>
+		<KDFHashAlgorithms>SHA256 SHA384 SHA512</KDFHashAlgorithms>
+		<KDFHMACflag>True</KDFHMACflag>
+    </CardSupports>
+  </CardDefaults>
+ 
+  <TestSuiteDefaults>
+      <INF>
+ <INFFile>C:\SmartcardMinidriverTest\eidLvMD.inf</INFFile>
+      </INF>
+      <Logging>
+          <LogFile>CMCK_log_v5.xml</LogFile>
+          <LogToConsole>True</LogToConsole>
+      </Logging>
+ 
+      <TestParams>
+          <TestParam>
+              <Test>MultiThreaded</Test>
+              <Name>t</Name>
+              <Value>5</Value>
+          </TestParam>
+          <TestParam>
+              <Test>MultiThreaded</Test>
+              <Name>n</Name>
+              <Value>5</Value>
+          </TestParam>
+          <TestParam>
+              <Test>NonRepeatingChallenge</Test>
+              <Name>n</Name>
+              <Value>300</Value>
+          </TestParam>
+      </TestParams>
+  </TestSuiteDefaults>
+ </V5>
+ </CMCKConfig>

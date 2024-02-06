@@ -1,0 +1,140 @@
+#!/bin/bash
+
+vercomp () {
+    if [[ $1 == $2 ]]
+    then
+        return 0
+    fi
+    local IFS=.
+    local i ver1=($1) ver2=($2)
+    # fill empty fields in ver1 with zeros
+    for ((i=${#ver1[@]}; i<${#ver2[@]}; i++))
+    do
+        ver1[i]=0
+    done
+    for ((i=0; i<${#ver1[@]}; i++))
+    do
+        if [[ -z ${ver2[i]} ]]
+        then
+            # fill empty fields in ver2 with zeros
+            ver2[i]=0
+        fi
+        if ((10#${ver1[i]} > 10#${ver2[i]}))
+        then
+            return 1
+        fi
+        if ((10#${ver1[i]} < 10#${ver2[i]}))
+        then
+            return 2
+        fi
+    done
+    return 0
+}
+
+OS_Version="$(sw_vers -productVersion)"
+
+vercomp ${OS_Version} 10.11
+
+if [[ $? == 2 ]]; then
+    SYS_TOKEN_DIR="/System/Library/Security/tokend"
+    SYS_LIB_DIR="/usr/lib"
+else
+    SYS_TOKEN_DIR="/Library/Security/tokend"
+    SYS_LIB_DIR="/usr/local/lib"
+fi
+
+vercomp ${OS_Version} 10.15
+
+if [[ $? != 2 ]]; then
+	defaults write /Library/Preferences/com.apple.security.smartcard Legacy -bool true
+	[ ! -d /Library/Security/tokend ] && mkdir -p /Library/Security/tokend
+fi
+
+if !([ -e "${SYS_LIB_DIR}/eidlv-pkcs11.so" ])
+then
+	ln -s /Library/latvia-eid/lib/eidlv-pkcs11.so ${SYS_LIB_DIR}/eidlv-pkcs11.so
+fi
+if !([ -e "${SYS_LIB_DIR}/eidlv-pkcs11.dylib" ])
+then
+	ln -s /Library/latvia-eid/lib/eidlv-pkcs11.dylib ${SYS_LIB_DIR}/eidlv-pkcs11.dylib
+fi
+
+# remove file from old version
+rm -fr ${SYS_LIB_DIR}/otlv-pkcs11.dylib
+rm -fr ${SYS_TOKEN_DIR}/OTLVID.tokend
+rm -fr /Library/latvia-eid/lib/otlv*
+rm -fr /Library/latvia-eid/bin/cardos-tool
+rm -fr /Library/latvia-eid/bin/cryptoflex-tool
+rm -fr /Library/latvia-eid/bin/eidenv
+rm -fr /Library/latvia-eid/bin/netkey-tool 
+rm -fr /Library/latvia-eid/bin/piv-tool
+rm -fr /Library/latvia-eid/bin/pkcs15-init 
+rm -fr /Library/latvia-eid/bin/westcos-tool
+
+if [ "`readlink /usr/local/bin/cardos-tool`" == "/Library/latvia-eid/bin/cardos-tool" ]; then
+    rm -rf /usr/local/bin/cardos-tool
+fi
+if [ "`readlink /usr/local/bin/cryptoflex-tool`" == "/Library/latvia-eid/bin/cryptoflex-tool" ]; then
+    rm -rf /usr/local/bin/cryptoflex-tool
+fi
+if [ "`readlink /usr/local/bin/eidenv`" == "/Library/latvia-eid/bin/eidenv" ]; then
+    rm -rf /usr/local/bin/eidenv
+fi
+if [ "`readlink /usr/local/bin/netkey-tool`" == "/Library/latvia-eid/bin/netkey-tool" ]; then
+    rm -rf /usr/local/bin/netkey-tool
+fi
+if [ "`readlink /usr/local/bin/piv-tool`" == "/Library/latvia-eid/bin/piv-tool" ]; then
+    rm -rf /usr/local/bin/piv-tool
+fi
+if [ "`readlink /usr/local/bin/opensc-explorer`" == "/Library/latvia-eid/bin/opensc-explorer" ]; then
+    rm -rf /usr/local/bin/opensc-explorer
+fi
+if [ "`readlink /usr/local/bin/pkcs11-tool`" == "/Library/latvia-eid/bin/pkcs11-tool" ]; then
+    rm -rf /usr/local/bin/pkcs11-tool
+fi
+if [ "`readlink /usr/local/bin/opensc-tool`" == "/Library/latvia-eid/bin/opensc-tool" ]; then
+    rm -rf /usr/local/bin/opensc-tool
+fi
+if [ "`readlink /usr/local/bin/pkcs15-crypt`" == "/Library/latvia-eid/bin/pkcs15-crypt" ]; then
+    rm -rf /usr/local/bin/pkcs15-crypt
+fi
+if [ "`readlink /usr/local/bin/pkcs15-init`" == "/Library/latvia-eid/bin/pkcs15-init" ]; then
+    rm -rf /usr/local/bin/pkcs15-init
+fi
+if [ "`readlink /usr/local/bin/pkcs15-tool`" == "/Library/latvia-eid/bin/pkcs15-tool" ]; then
+    rm -rf /usr/local/bin/pkcs15-tool
+fi
+if [ "`readlink /usr/local/bin/westcos-tool`" == "/Library/latvia-eid/bin/westcos-tool" ]; then
+    rm -rf /usr/local/bin/westcos-tool
+fi
+
+ln -sf /Library/latvia-eid/lib/eidlv-pkcs11.dylib ${SYS_LIB_DIR}/otlv-pkcs11.dylib
+ln -sf /Library/latvia-eid/lib/eidlv-pkcs11.so ${SYS_LIB_DIR}/otlv-pkcs11.so
+ln -sf /Library/latvia-eid/lib/eidlv-pkcs11.dylib /Library/latvia-eid/lib/otlv-pkcs11.dylib
+ln -sf /Library/latvia-eid/lib/eidlv-pkcs11.so /Library/latvia-eid/lib/otlv-pkcs11.so
+
+xxd -r -p /Library/latvia-eid/tokend/tkd.desc /Library/latvia-eid/tokend/tkd.dat
+unzip /Library/latvia-eid/tokend/tkd.dat -d /Library/latvia-eid/tokend
+rm -f /Library/latvia-eid/tokend/tkd.dat
+rm -f /Library/latvia-eid/tokend/tkd.desc
+rm -f /Library/latvia-eid/tokend/eid.zip
+cp -R /Library/latvia-eid/tokend/EIDLV.tokend ${SYS_TOKEN_DIR}/.
+
+# CTK
+#rm -fr ${SYS_TOKEN_DIR}/EIDLV.tokend
+#pluginkit -a /Applications/LatviaEIDTokenApp.app/Contents/PlugIns/LatviaEIDToken.appex
+
+rm -fr /usr/local/bin/latvia-eid-uninstall
+ln -sf /Library/latvia-eid/bin/latvia-eid-uninstall /usr/local/bin/latvia-eid-uninstall
+ln -sf /Library/latvia-eid/bin/opensc-explorer /usr/local/bin/eidlv-opensc-explorer
+ln -sf /Library/latvia-eid/bin/opensc-tool /usr/local/bin/eidlv-opensc-tool
+ln -sf /Library/latvia-eid/bin/pkcs11-tool /usr/local/bin/eidlv-pkcs11-tool
+ln -sf /Library/latvia-eid/bin/pkcs15-crypt /usr/local/bin/eidlv-pkcs15-crypt
+ln -sf /Library/latvia-eid/bin/pkcs15-tool /usr/local/bin/eidlv-pkcs15-tool
+
+chmod +x /Library/latvia-eid/bin/latvia-eid-uninstall
+
+chmod go-w /Library/LaunchAgents/org.latviaeid.eidlvuiserver.plist
+chmod -R go-w  /Library/latvia-eid/*
+ 
+exit 0

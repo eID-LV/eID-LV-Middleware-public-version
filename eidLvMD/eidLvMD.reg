@@ -1,0 +1,30 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Cryptography\Calais\SmartCards\Latvia-eID]
+"ATR"=hex:3B,FD,18,00,00,81,31,FE,45,80,31,81,53,47,45,31,73,84,21,C0,81,07,2E
+"ATRMask"=hex:FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF
+"Crypto Provider"="Microsoft Base Smart Card Crypto Provider"
+"Smart Card Key Storage Provider"="Microsoft Smart Card Key Storage Provider"
+"80000001"="eidLvMD.dll"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Cryptography\Calais\SmartCards\Latvia-eID Contacless]
+"ATR"=hex:3B,8D,80,01,80,31,81,53,47,45,31,73,84,21,C0,81,07,CC
+"ATRMask"=hex:FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF
+"Crypto Provider"="Microsoft Base Smart Card Crypto Provider"
+"Smart Card Key Storage Provider"="Microsoft Smart Card Key Storage Provider"
+"80000001"="eidLvMD.dll"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Cryptography\Calais\SmartCards\Latvia-eID]
+"ATR"=hex:3B,FD,18,00,00,81,31,FE,45,80,31,81,53,47,45,31,73,84,21,C0,81,07,2E
+"ATRMask"=hex:FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF
+"Crypto Provider"="Microsoft Base Smart Card Crypto Provider"
+"Smart Card Key Storage Provider"="Microsoft Smart Card Key Storage Provider"
+"80000001"="eidLvMD.dll"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Cryptography\Calais\SmartCards\Latvia-eID Contacless]
+"ATR"=hex:3B,8D,80,01,80,31,81,53,47,45,31,73,84,21,C0,81,07,CC
+"ATRMask"=hex:FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF
+"Crypto Provider"="Microsoft Base Smart Card Crypto Provider"
+"Smart Card Key Storage Provider"="Microsoft Smart Card Key Storage Provider"
+"80000001"="eidLvMD.dll"
+

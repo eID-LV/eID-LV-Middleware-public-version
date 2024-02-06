@@ -1,0 +1,267 @@
+.. highlight:: sh
+
+.. |PACE| replace:: :abbr:`PACE (Password Authenticated Connection Establishment)`
+.. |TA| replace:: :abbr:`TA (Terminal Authenticatation)`
+.. |CA| replace:: :abbr:`CA (Chip Authentication)`
+.. |EAC| replace:: :abbr:`EAC (Extended Access Control)`
+.. |CVCA| replace:: :abbr:`CVCA (Country Verifying Certificate Authority)`
+.. |CSCA| replace:: :abbr:`CSCA (Country Signing Certificate Authority)`
+.. |correct (TM)| unicode:: correct U+2122 .. correct with trademark sign
+
+*******************************************************************************
+Download OpenPACE
+*******************************************************************************
+
+You can download the latest release of OpenPACE on `Github
+<https://github.com/frankmorgner/openpace/releases/latest>`_. Older releases
+are still available on `Sourceforge
+<http://sourceforge.net/projects/openpace/files>`_.
+
+If you plan to make contribution, you can clone our git repository to later
+make a pull request on Github::
+
+    git clone https://github.com/frankmorgner/openpace.git
+
+Alternatively, the current developement version is available as `zip file
+<https://github.com/frankmorgner/openpace/archive/master.zip>`_ or as
+precompiled Windows `32 bit binaries
+<https://ci.appveyor.com/api/projects/frankmorgner/openpace/artifacts/openpace_Win32-vs12.zip?branch=master&job=Environment%3A%20VSVER%3D12%3B%20Platform%3A%20x86>`_
+and `64 bit binaries
+<https://ci.appveyor.com/api/projects/frankmorgner/openpace/artifacts/openpace_Win64-vs12.zip?branch=master&job=Environment%3A%20VSVER%3D12%3B%20Platform%3A%20x64>`_.
+
+
+
+*******************************************************************************
+Compiling and Installing OpenPACE
+*******************************************************************************
+
+
+==================================================
+Setting up a development environment using Vagrant
+==================================================
+
+The easiest way to setup a development or test environment is to use Vagrant_ with VirtualBox_.
+OpenPACE comes with a Vagrantfile which lets you setup a working
+environment with just one command. To create a Ubuntu based virtual machine,
+install all dependencies and compile OpenPACE, run the following command
+in the OpenPACE directory::
+
+   vagrant up
+
+You then need to ``vagrant ssh`` in order to access the VM. The
+:file:`openpace` folder is shared between the host and the VM so any
+changes you make on the host are immediately visible in the VM and vice versa.
+
+
+====================================
+Compiling on Linux, Unix and similar
+====================================
+
+OpenPACE uses the GNU Build System to compile and install. If you are
+unfamiliar with it, please have a look at :file:`INSTALL`. If you can not find
+it, you are probably working bleeding edge in the repository.  Run the
+following command in :file:`openpace` to get the missing standard
+auxiliary files::
+    
+    autoreconf --verbose --install
+
+To configure (``./configure --help`` lists possible options), build and
+install OpenPACE now do the following::
+
+    ./configure
+    make
+    make install
+
+OpenPACE depends on the OpenSSL_ library. Since |PACE| uses CMAC and the
+Brainpool curves, OpenSSL is required with version 1.0.2 or later.
+
+Furthermore, additional object identifiers from `BSI TR-03110`_ are required.
+You have two options to get them to work:
+
+1. Let OpenPACE load the object identifiers at runtime
+2. Patch OpenSSL to include the identifiers
+
+The first option allows you to install an unchanged version of OpenSSL to your
+system. However, performance will be slightly worse and there are some
+limitations. For example, you won't be able to use the new NIDs as labels in a
+switch statement and you need to make sure to call ``EAC_init()`` first.  For
+patching OpenSSL we provide :file:`bsi_objects.txt`. You can configure
+OpenPACE with :option:`--enable-openssl-install`, which will
+automatically download, patch, build and install OpenSSL if needed.
+
+The language bindings for Python, Java, ... are currently disabled by default.
+You need to explicitely configure OpenPACE to install them by using
+:option:`--enable-python`, :option:`--enable-java`, ... This requires SWIG to
+be installed along with the language's toolchain to build the bindings.
+
+
+=====================
+Compiling for Windows
+=====================
+
+Cross-Compiling for Windows on Linux
+------------------------------------
+
+Our :file:`Makefile` includes scripts for cross compilation for Windows
+on Debian wheezy::
+
+    test -x configure || autoreconf --verbose --install
+    ./configure --enable-openssl-install
+    make win
+
+gendef_ should be installed to generate the library definitions.
+On successfull compilation, the Windows binaries can be found in
+:file:`openpace-1.0.3_win32`. For customization you
+may pass the following :command:`make` variables:
+
+====================== ==================== ===========================================================================================
+Make Variable          Default              Meaning
+====================== ==================== ===========================================================================================
+:envvar:`WIN_TOOL`     ``i686-w64-mingw32`` cross compiler
+:envvar:`WIN_TOOL_DIR` ``/usr/${WIN_TOOL}`` root directory of the cross compiler containing the :file:`lib` and :file:`include` folders
+====================== ==================== ===========================================================================================
+
+Compiling with Visual Studio
+----------------------------
+
+.. highlight:: bat
+
+A quick and dirty way without
+wasting too much time on setting up the development environment would be to
+compile the library by hand in the :menuselection:`Visual Studio Tools -->
+Developer Command Prompt` with installed `OpenSSL Windows binaries`_:
+
+.. literalinclude:: ../appveyor.yml
+    :lines: 106-112
+
+The |correct (TM)| process combines Visual Studio, MSYS2_ with cccl_ and allows
+using the same procedure and features that we are used to when `Compiling on
+Linux, Unix and similar`_. We will not depict it here. If you're interested,
+have a look at our `Windows CI script
+<https://github.com/frankmorgner/openpace/blob/master/appveyor.yml>`_ which
+includes all steps of this procedure.
+
+Compiling the Python Bindings
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+With the cross compiled or native binaries you may now compile the Python
+bindings.  For this you need to setup your Windows as following:
+
+1. Check out the git repository to the directory :file:`C:\\openpace`
+
+2. Install `Visual Studio 2013`_ and open :menuselection:`Visual Studio Tools
+   --> Developer Command Prompt`
+
+3. Install `SWIG`_ and modify the :envvar:`PATH` so that :command:`swig.exe`
+   can be found::
+
+    set PATH="C:\swig";%PATH%
+
+4. Install `Python`_ and set :envvar:`PYTHON_INCLUDE` and
+   :envvar:`PYTHON_LIBD`/:envvar:`PYTHON_LIB` accordingly::
+
+    set PYTHON_INCLUDE="C:\Python27\include"
+    set PYTHON_LIBD="C:\Python27"
+    set PYTHON_LIB="python278.lib"
+
+5. Copy the cross compiled OpenPACE libraries to Windows and set :envvar:`OPENPACE_ROOT`::
+   
+    set OPENPACE_ROOT="C:\openpace\openpace-1.0.0_win32
+
+6. Create OpenPACE's and OpenSSL's import libraries::
+
+    lib /def:"%OPENPACE_ROOT%\lib\libeac-2.def" /OUT:"%OPENPACE_ROOT%\lib\libeac.lib"
+    lib /def:"%OPENPACE_ROOT%\lib\libeay32.def" /OUT:"%OPENPACE_ROOT%\lib\libeay32.lib"
+
+6. Build the Python bindings::
+
+    cd "C:\openpace"
+    msbuild "bindings\win32\eac.sln"
+
+   If you can successfully build the solution, you can find the python in
+   :file:`%OPENPACE_ROOT%\\bindings\\win32\\Release`. Put them all together
+   with the cross compiled OpenPACE library::
+   
+    copy "C:\openpace\bindings\win32\Release\_eac.pyd" "%OPENPACE_ROOT%\bin"
+    copy "C:\openpace\bindings\win32\Release\eac.py"   "%OPENPACE_ROOT%\bin"
+    copy "C:\openpace\bindings\python\chat.py"         "%OPENPACE_ROOT%\bin"
+    copy "C:\openpace\bindings\python\pace_entity.py"  "%OPENPACE_ROOT%\bin"
+   
+   Now for testing, you may try::
+
+    cd "%OPENPACE_ROOT%\bin"
+    "%PYTHON_LIBD%\python.exe" "C:\openpace\bindings\python\example.py"
+
+
+=====================
+Compiling for Android
+=====================
+
+.. highlight:: sh
+
+Our :file:`Makefile` includes scripts for cross compilation for Android on
+Debian wheezy::
+
+    test -x configure || autoreconf --verbose --install
+    ./configure --enable-openssl-install
+    make android
+
+=================================== ================================================================================ =====================================================
+Make Variable                       Default                                                                          Meaning
+=================================== ================================================================================ =====================================================
+:envvar:`ANDROID_ARCH`              ``arm``                                                                          target Architecture
+:envvar:`ANDROID_TOOL`              ``${ANDROID_ARCH}-linux-androideabi``                                            cross compiler
+:envvar:`MAKE_STANDALONE_TOOLCHAIN` ``${HOME}/.local/opt/android-ndk-r10e/build/tools/make-standalone-toolchain.sh`` location of the NDK script for creating the toolchain
+=================================== ================================================================================ =====================================================
+
+On successfull compilation, the Android binaries can be found in
+:file:`openpace-1.0.3_${ANDROID_ARCH}-linux-androideabi`.
+
+
+.. _javascript_api:
+
+========================
+Compiling for Javascript
+========================
+
+Technically the process for getting OpenPACE into Javascript is similar to
+cross compiling. With Emscripten_ the library is compiled into LLVM bytecode
+and then translated into Javascript. Use the following command::
+
+    test -x configure || autoreconf --verbose --install
+    ./configure --enable-openssl-install
+    make emscripten
+
+========================= ================================== =======================================================================
+Make Variable             Default                            Meaning
+========================= ================================== =======================================================================
+:envvar:`EMSCRIPTEN_ROOT` ``${HOME}/.local/src/emscripten``  root directory of emscripten containing the :file:`system/include/libc`
+========================= ================================== =======================================================================
+
+On successfull compilation, the compiled bitcode files can be found in
+:file:`openpace-1.0.3_js`. You can run our testsuite
+completely in Javascript or `in your browser <_static/eactest.html>`_::
+
+    nodejs openpace-1.0.3_js/bin/eactest.js
+    firefox openpace-1.0.3_js/eactest.html
+
+.. warning::
+    `Javascript cryptography is considered harmful`_. You may want to think
+    twice before using the Javascript version of OpenPACE.
+
+
+.. target-notes::
+
+.. _`BSI TR-03110`: https://www.bsi.bund.de/EN/Publications/TechnicalGuidelines/TR03110/BSITR03110.html
+.. _`Emscripten`: https://github.com/kripken/emscripten
+.. _`Javascript cryptography is considered harmful`: http://www.matasano.com/articles/javascript-cryptography
+.. _`OpenSSL`: http://openssl.org
+.. _`SWIG`: http://www.swig.org/download.html
+.. _`Python`: https://www.python.org/downloads/release/python-278/
+.. _`gendef`: http://sourceforge.net/p/mingw-w64/wiki2/gendef/
+.. _`Vagrant`: https://www.vagrantup.com
+.. _`VirtualBox`: https://www.virtualbox.org/
+.. _`Visual Studio 2013`: http://msdn.microsoft.com/library/dd831853.aspx
+.. _`MSYS2`: https://msys2.github.io/
+.. _`cccl`: https://github.com/frankmorgner/cccl
+.. _`OpenSSL Windows binaries`: https://slproweb.com/products/Win32OpenSSL.html

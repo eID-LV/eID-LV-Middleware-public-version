@@ -1,0 +1,171 @@
+/* config.h.in.  Generated from configure.ac by autoheader.  */
+
+/* Define to 1 if you have the `alarm' function. */
+#undef HAVE_ALARM
+
+/* Define to 1 if you have the <arpa/inet.h> header file. */
+#undef HAVE_ARPA_INET_H
+
+/* Define to 1 if you have the `ASN1_STRING_get0_data' function. */
+#undef HAVE_ASN1_STRING_GET0_DATA
+
+/* Define to 1 if you have the declaration of `OPENSSL_zalloc', and to 0 if
+   you don't. */
+#undef HAVE_DECL_OPENSSL_ZALLOC
+
+/* Define to 1 if you have the `DH_get0_key' function. */
+#undef HAVE_DH_GET0_KEY
+
+/* Define to 1 if you have the `DH_get0_pqg' function. */
+#undef HAVE_DH_GET0_PQG
+
+/* Define to 1 if you have the `DH_set0_key' function. */
+#undef HAVE_DH_SET0_KEY
+
+/* Define to 1 if you have the `DH_set0_pqg' function. */
+#undef HAVE_DH_SET0_PQG
+
+/* Define to 1 if you have the <dlfcn.h> header file. */
+#undef HAVE_DLFCN_H
+
+/* Define to 1 if you have the `ECDSA_SIG_get0' function. */
+#undef HAVE_ECDSA_SIG_GET0
+
+/* Define to 1 if you have the `ECDSA_SIG_set0' function. */
+#undef HAVE_ECDSA_SIG_SET0
+
+/* Define to 1 if you have the `EC_KEY_METHOD' type. */
+#undef HAVE_EC_KEY_METHOD
+
+/* Define to 1 if you have the <inttypes.h> header file. */
+#undef HAVE_INTTYPES_H
+
+/* Define to 1 if you have the <jni.h> header file. */
+#undef HAVE_JNI_H
+
+/* Define to 1 if you have the <limits.h> header file. */
+#undef HAVE_LIMITS_H
+
+/* Define to 1 if your system has a GNU libc compatible `malloc' function, and
+   to 0 otherwise. */
+#undef HAVE_MALLOC
+
+/* Define to 1 if you have the `memcpy' function. */
+#undef HAVE_MEMCPY
+
+/* Define to 1 if you have the <memory.h> header file. */
+#undef HAVE_MEMORY_H
+
+/* Define to 1 if you have the `memset' function. */
+#undef HAVE_MEMSET
+
+/* Define to 1 if you have the <openssl/aes.h> header file. */
+#undef HAVE_OPENSSL_AES_H
+
+/* Define to 1 if you have the <openssl/bio.h> header file. */
+#undef HAVE_OPENSSL_BIO_H
+
+/* Define to 1 if you have the <openssl/buffer.h> header file. */
+#undef HAVE_OPENSSL_BUFFER_H
+
+/* Define to 1 if you have the <openssl/cmac.h> header file. */
+#undef HAVE_OPENSSL_CMAC_H
+
+/* Define to 1 if you have the <openssl/des.h> header file. */
+#undef HAVE_OPENSSL_DES_H
+
+/* Define to 1 if you have the <openssl/dh.h> header file. */
+#undef HAVE_OPENSSL_DH_H
+
+/* Define to 1 if you have the <openssl/ecdh.h> header file. */
+#undef HAVE_OPENSSL_ECDH_H
+
+/* Define to 1 if you have the <openssl/evp.h> header file. */
+#undef HAVE_OPENSSL_EVP_H
+
+/* Define to 1 if you have the <openssl/obj_mac.h> header file. */
+#undef HAVE_OPENSSL_OBJ_MAC_H
+
+/* Define to 1 if you have the <openssl/sha.h> header file. */
+#undef HAVE_OPENSSL_SHA_H
+
+/* Define to 1 if you have the <Python.h> header file. */
+#undef HAVE_PYTHON_H
+
+/* Define to 1 if you have the `RSA_get0_key' function. */
+#undef HAVE_RSA_GET0_KEY
+
+/* Define to 1 if you have the `RSA_set0_key' function. */
+#undef HAVE_RSA_SET0_KEY
+
+/* Define to 1 if you have the <stdint.h> header file. */
+#undef HAVE_STDINT_H
+
+/* Define to 1 if you have the <stdlib.h> header file. */
+#undef HAVE_STDLIB_H
+
+/* Define to 1 if you have the <strings.h> header file. */
+#undef HAVE_STRINGS_H
+
+/* Define to 1 if you have the <string.h> header file. */
+#undef HAVE_STRING_H
+
+/* Define to 1 if you have the <sys/stat.h> header file. */
+#undef HAVE_SYS_STAT_H
+
+/* Define to 1 if you have the <sys/time.h> header file. */
+#undef HAVE_SYS_TIME_H
+
+/* Define to 1 if you have the <sys/types.h> header file. */
+#undef HAVE_SYS_TYPES_H
+
+/* Define to 1 if you have the <unistd.h> header file. */
+#undef HAVE_UNISTD_H
+
+/* Define to the sub-directory where libtool stores uninstalled libraries. */
+#undef LT_OBJDIR
+
+/* Name of package */
+#undef PACKAGE
+
+/* Define to the address where bug reports for this package should be sent. */
+#undef PACKAGE_BUGREPORT
+
+/* Define to the full name of this package. */
+#undef PACKAGE_NAME
+
+/* Define to the full name and version of this package. */
+#undef PACKAGE_STRING
+
+/* Define to the one symbol short name of this package. */
+#undef PACKAGE_TARNAME
+
+/* Define to the home page for this package. */
+#undef PACKAGE_URL
+
+/* Define to the version of this package. */
+#undef PACKAGE_VERSION
+
+/* Define to 1 if you have the ANSI C header files. */
+#undef STDC_HEADERS
+
+/* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
+#undef TIME_WITH_SYS_TIME
+
+/* Version number of package */
+#undef VERSION
+
+/* Define for Solaris 2.5.1 so the uint32_t typedef from <sys/synch.h>,
+   <pthread.h>, or <semaphore.h> is not used. If the typedef were allowed, the
+   #define below would cause a syntax error. */
+#undef _UINT32_T
+
+/* Define to rpl_malloc if the replacement function should be used. */
+#undef malloc
+
+/* Define to `unsigned int' if <sys/types.h> does not define. */
+#undef size_t
+
+/* Define to the type of an unsigned integer type of width exactly 32 bits if
+   such a type exists and the standard includes do not define it. */
+#undef uint32_t

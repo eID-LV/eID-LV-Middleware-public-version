@@ -1,0 +1,57 @@
+PREFIX ?= /Library/latvia-eid
+FULLNAME = eidlv_engine.dylib
+OSXVERSION ?= 10.13
+OSXSDK =
+MACOSX_DEPLOYMENT_TARGET = $(OSXVERSION)
+CXX="gcc"
+
+#check to see if XCode 3 path exists.Otherwise, use XCode 4 path
+OSXSDKDIR := /Developer/SDKs/MacOSX$(OSXSDK).sdk
+ifeq ($(wildcard $(OSXSDKDIR)/SDKSettings.plist),)
+OSXSDKDIR := /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX$(OSXSDK).sdk
+endif
+
+CXXFLAGSBASE =  -DNDEBUG -I. -I../openssl/include -isysroot $(OSXSDKDIR) -mmacosx-version-min=$(OSXVERSION) -O2  -I. -D_REENTRANT -DLATVIAEID_PREFIX="\"$(PREFIX)\"" $(WX_CFLAGS)
+
+CXXFLAGS = -arch x86_64 -arch arm64 $(CXXFLAGSBASE)
+
+LDFLAGS = -L../openssl/lib -lcrypto -Wl,-syslibroot,$(OSXSDKDIR) -arch x86_64 -arch arm64 -Wl,-exported_symbols_list,eidlv_engine.macosx.exports -shared -Wl,-undefined,error
+
+SRCS = eng_back.c eng_err.c eng_front.c eng_parse.c libpkcs11.c p11_atfork.c p11_attr.c p11_cert.c p11_ckr.c p11_ec.c p11_err.c p11_front.c p11_key.c p11_load.c p11_misc.c p11_pkey.c p11_rsa.c p11_slot.c
+OBJECTS = $(SRCS:.c=.o)
+
+#######################
+# don't modify
+#######################
+libdir = $(PREFIX)/lib
+
+all: $(FULLNAME)
+
+$(FULLNAME): $(OBJECTS)
+	MACOSX_DEPLOYMENT_TARGET=$(OSXVERSION) $(CXX) $(LDFLAGS) -o $(FULLNAME) $(OBJECTS)
+
+	
+-include $(OBJECTS:.o=.d)
+
+.c.o:
+	MACOSX_DEPLOYMENT_TARGET=$(OSXVERSION) $(CXX) $(CXXFLAGS) -c $< -o $@
+	MACOSX_DEPLOYMENT_TARGET=$(OSXVERSION) $(CXX) -MM $(CXXFLAGSBASE) $*.c > $*.d
+	@mv -f $*.d $*.d.tmp
+	@sed -e 's|.*:|$*.o:|' < $*.d.tmp > $*.d
+	@sed -e 's/.*://' -e 's/\\$$//' < $*.d.tmp | fmt -1 | \
+	  sed -e 's/^ *//' -e 's/$$/:/' >> $*.d
+	@rm -f $*.d.tmp
+
+install: all
+	mkdir -p $(libdir)
+	cp -R $(FULLNAME) $(libdir)/.
+	
+uninstall:
+	rm -fr $(libdir)/$(FULLNAME)
+	
+.PHONY: clean uninstall install
+clean:
+	rm -fr *.o *.d
+	rm -fr $(FULLNAME)
+
+

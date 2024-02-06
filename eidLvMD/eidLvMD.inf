@@ -1,0 +1,154 @@
+;
+; Latvia Minidriver for Latvia-eID Smartcard installation x86 and x64 package.
+;
+
+[Version]
+Signature="$Windows NT$"
+Class=SmartCard
+ClassGuid={990A2BD7-E738-46c7-B26F-1CF8FB9F1391}
+Provider=%ProviderName%
+CatalogFile=eidLvMD.cat
+DriverVer=11/27/2022,2.1.2.1
+
+[Manufacturer]
+%ProviderName%=Minidriver,NTamd64,NTamd64.6.1,NTx86,NTx86.6.1
+
+
+[Minidriver.NTamd64]
+%CardDeviceNameLatviaEID%=Minidriver64_Install,SCFILTER\CID_80318153474531738421C08107
+
+[Minidriver.NTx86]
+%CardDeviceNameLatviaEID%=Minidriver32_Install,SCFILTER\CID_80318153474531738421C08107
+
+[Minidriver.NTamd64.6.1]
+%CardDeviceNameLatviaEID%=Minidriver64_61_Install,SCFILTER\CID_80318153474531738421C08107
+
+[Minidriver.NTx86.6.1]
+%CardDeviceNameLatviaEID%=Minidriver32_61_Install,SCFILTER\CID_80318153474531738421C08107
+
+[DefaultInstall]
+CopyFiles=x86_CopyFiles
+AddReg=AddRegDefault
+
+[DefaultInstall.ntamd64]
+CopyFiles=amd64_CopyFiles
+CopyFiles=wow64_CopyFiles
+AddReg=AddRegWOW64
+AddReg=AddRegDefault
+
+[DefaultInstall.NTx86]
+CopyFiles=x86_CopyFiles
+AddReg=AddRegDefault
+
+[DefaultInstall.NTamd64.6.1]
+CopyFiles=amd64_CopyFiles
+CopyFiles=wow64_CopyFiles
+AddReg=AddRegWOW64
+AddReg=AddRegDefault
+
+[DefaultInstall.NTx86.6.1]
+CopyFiles=x86_CopyFiles
+AddReg=AddRegDefault
+
+[SourceDisksFiles]
+eidLvmd64.dll=1
+eidLvmd.dll=1
+
+[SourceDisksNames]
+1 = %MediaDescription%
+
+[UMPassService_Install]
+DisplayName    = %umpass.SVCDESC%     ; Friendly Name of the Service
+ServiceType    = 1                    ; SERVICE_KERNEL_DRIVER
+StartType      = 3                    ; SERVICE_DEMAND_START 
+ErrorControl   = 1                    ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\umpass.sys
+LoadOrderGroup = Extended Base
+
+[Minidriver64_Install.NT]
+CopyFiles=amd64_CopyFiles
+CopyFiles=wow64_CopyFiles
+AddReg=AddRegWOW64
+AddReg=AddRegDefault
+
+[Minidriver64_61_Install.NT]
+CopyFiles=amd64_CopyFiles
+CopyFiles=wow64_CopyFiles
+AddReg=AddRegWOW64
+AddReg=AddRegDefault
+
+[Minidriver32_Install.NT]
+CopyFiles=x86_CopyFiles
+AddReg=AddRegDefault
+
+[Minidriver32_61_Install.NT]
+CopyFiles=x86_CopyFiles
+AddReg=AddRegDefault
+
+[Minidriver64_Install.NT.Services]
+AddService = UMPass, 0x00000002, UMPassService_Install
+ 
+[Minidriver32_Install.NT.Services]
+AddService = UMPass, 0x00000002, UMPassService_Install
+
+[Minidriver64_61_Install.NT.Services]
+AddService = UMPass, 0x00000002, UMPassService_Install
+
+[Minidriver32_61_Install.NT.Services]
+AddService = UMPass, 0x00000002, UMPassService_Install
+
+[amd64_CopyFiles]
+eidLvmd.dll,eidLvmd64.dll
+
+[x86_CopyFiles]
+eidLvmd.dll
+
+[wow64_CopyFiles]
+eidLvmd.dll
+
+[AddRegWOW64]
+HKLM, %SmartCardNameLatviaEIDWOW64%,"ATR",0x00000001,3B,FD,18,00,00,81,31,FE,45,80,31,81,53,47,45,31,73,84,21,C0,81,07,2E
+HKLM, %SmartCardNameLatviaEIDWOW64%,"ATRMask",0x00000001,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF
+HKLM, %SmartCardNameLatviaEIDWOW64%,"Crypto Provider",0x00000000,"Microsoft Base Smart Card Crypto Provider"
+HKLM, %SmartCardNameLatviaEIDWOW64%,"Smart Card Key Storage Provider",0x00000000,"Microsoft Smart Card Key Storage Provider"
+HKLM, %SmartCardNameLatviaEIDWOW64%,"80000001",0x00000000,%SmartCardCardModule%
+
+HKLM, %SmartCardNameLatviaEIDContaclessWOW64%,"ATR",0x00000001,3B,8D,80,01,80,31,81,53,47,45,31,73,84,21,C0,81,07,CC
+HKLM, %SmartCardNameLatviaEIDContaclessWOW64%,"ATRMask",0x00000001,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF
+HKLM, %SmartCardNameLatviaEIDContaclessWOW64%,"Crypto Provider",0x00000000,"Microsoft Base Smart Card Crypto Provider"
+HKLM, %SmartCardNameLatviaEIDContaclessWOW64%,"Smart Card Key Storage Provider",0x00000000,"Microsoft Smart Card Key Storage Provider"
+HKLM, %SmartCardNameLatviaEIDContaclessWOW64%,"80000001",0x00000000,%SmartCardCardModule%
+
+[AddRegDefault]
+HKLM, %SmartCardNameLatviaEID%,"ATR",0x00000001,3B,FD,18,00,00,81,31,FE,45,80,31,81,53,47,45,31,73,84,21,C0,81,07,2E
+HKLM, %SmartCardNameLatviaEID%,"ATRMask",0x00000001,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF
+HKLM, %SmartCardNameLatviaEID%,"Crypto Provider",0x00000000,"Microsoft Base Smart Card Crypto Provider"
+HKLM, %SmartCardNameLatviaEID%,"Smart Card Key Storage Provider",0x00000000,"Microsoft Smart Card Key Storage Provider"
+HKLM, %SmartCardNameLatviaEID%,"80000001",0x00000000,%SmartCardCardModule%
+
+HKLM, %SmartCardNameLatviaEIDContacless%,"ATR",0x00000001,3B,8D,80,01,80,31,81,53,47,45,31,73,84,21,C0,81,07,CC
+HKLM, %SmartCardNameLatviaEIDContacless%,"ATRMask",0x00000001,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF,FF
+HKLM, %SmartCardNameLatviaEIDContacless%,"Crypto Provider",0x00000000,"Microsoft Base Smart Card Crypto Provider"
+HKLM, %SmartCardNameLatviaEIDContacless%,"Smart Card Key Storage Provider",0x00000000,"Microsoft Smart Card Key Storage Provider"
+HKLM, %SmartCardNameLatviaEIDContacless%,"80000001",0x00000000,%SmartCardCardModule%
+
+[DestinationDirs]
+amd64_CopyFiles=10,system32
+x86_CopyFiles=10,system32
+wow64_CopyFiles=10,syswow64
+
+; =================== Generic ==================================
+
+[Strings]
+ProviderName ="Latvia"
+MediaDescription="Latvia Minidriver for Latvia-eID Smart Card"
+
+CardDeviceNameLatviaEID="Latvia-eID Smart Card"
+SmartCardNameLatviaEID="SOFTWARE\Microsoft\Cryptography\Calais\SmartCards\Latvia-eID"
+SmartCardNameLatviaEIDContacless="SOFTWARE\Microsoft\Cryptography\Calais\SmartCards\Latvia-eID Contacless"
+
+SmartCardNameLatviaEIDWOW64="SOFTWARE\Wow6432Node\Microsoft\Cryptography\Calais\SmartCards\Latvia-eID"
+SmartCardNameLatviaEIDContaclessWOW64="SOFTWARE\Wow6432Node\Microsoft\Cryptography\Calais\SmartCards\Latvia-eID Contacless"
+
+SmartCardCardModule="eidLvmd.dll"
+umpass.SVCDESC = "Microsoft UMPass Driver"
